@@ -66,15 +66,15 @@ textadept.editing.autocompleters.ruby = function()
   local assignment = '%f[%w_]' .. symbol:gsub('(%p)', '%%%1') .. '%s*=%s*(.*)$'
   for i = buffer:line_from_position(buffer.current_pos) - 1, 1, -1 do
     local expr = buffer:get_line(i):match(assignment)
-    if expr then
-      for patt, type in pairs(M.expr_types) do
-        if expr:find(patt) then symbol = type break end
-      end
-      if expr:find('^[%w_:]+%.new') then
-        symbol = expr:match('^([%w_:]+).new') -- e.g. a = Foo.new
-        break
-      end
+    if not expr then goto continue end
+    for patt, type in pairs(M.expr_types) do
+      if expr:find(patt) then symbol = type break end
     end
+    if expr:find('^[%w_:]+%.new') then
+      symbol = expr:match('^([%w_:]+).new') -- e.g. a = Foo.new
+      break
+    end
+    ::continue::
   end
   -- Search through ctags for completions for that symbol.
   local name_patt = '^' .. part
@@ -84,14 +84,13 @@ textadept.editing.autocompleters.ruby = function()
     if not lfs.attributes(filename) then goto continue end
     for line in io.lines(filename) do
       local name = line:match('^%S+')
-      if name:find(name_patt) and not list[name] then
-        local fields = line:match(';"\t(.*)$')
-        local k, class = fields:sub(1, 1), fields:match('class:(%S+)') or ''
-        if class:find(symbol_patt) and (op ~= ':' or k == 'f') then
-          list[#list + 1] = name .. sep .. xpms[k]
-          list[name] = true
-        end
+      if not name:find(name_patt) or list[name] then goto continue end
+      local fields = line:match(';"\t(.*)$')
+      local k, class = fields:sub(1, 1), fields:match('class:(%S+)') or ''
+      if class:find(symbol_patt) then
+        list[#list + 1], list[name] = name .. sep .. xpms[k], true
       end
+      ::continue::
     end
     ::continue::
   end
@@ -124,18 +123,18 @@ function M.try_to_autocomplete_end()
   local line = buffer:get_line(line_num)
   local line_indentation = buffer.line_indentation
   for _, patt in ipairs(control_structure_patterns) do
-    if line:find(patt) then
-      local indent = line_indentation[line_num]
-      buffer:begin_undo_action()
-      buffer:new_line()
-      buffer:new_line()
-      buffer:add_text('end')
-      line_indentation[line_num + 1] = indent + buffer.tab_width
-      buffer:line_up()
-      buffer:line_end()
-      buffer:end_undo_action()
-      return true
-    end
+    if not line:find(patt) then goto continue end
+    local indent = line_indentation[line_num]
+    buffer:begin_undo_action()
+    buffer:new_line()
+    buffer:new_line()
+    buffer:add_text('end')
+    line_indentation[line_num + 1] = indent + buffer.tab_width
+    buffer:line_up()
+    buffer:line_end()
+    buffer:end_undo_action()
+    do return true end
+    ::continue::
   end
   return false
 end
