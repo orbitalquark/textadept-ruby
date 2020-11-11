@@ -36,16 +36,6 @@ See also:
 
 ## Tables defined by `_M.ruby`
 
-<a id="keys.ruby"></a>
-### `keys.ruby`
-
-Container for Ruby-specific key bindings.
-
-<a id="snippets.ruby"></a>
-### `snippets.ruby`
-
-Container for Ruby-specific snippets.
-
 <a id="_M.ruby.control_structure_patterns"></a>
 ### `_M.ruby.control_structure_patterns`
 

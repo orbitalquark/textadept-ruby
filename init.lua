@@ -228,111 +228,101 @@ function M.toggle_block()
   buffer:end_undo_action()
 end
 
----
--- Container for Ruby-specific key bindings.
--- @class table
--- @name _G.keys.ruby
-keys.ruby = {
-  ['shift+\n'] = M.try_to_autocomplete_end,
-  ['ctrl+{'] = M.toggle_block,
-}
+keys.ruby['shift+\n'] = M.try_to_autocomplete_end
+keys.ruby['ctrl+{'] = M.toggle_block
 
 -- Snippets.
 
----
--- Container for Ruby-specific snippets.
--- @class table
--- @name _G.snippets.ruby
-snippets.ruby = {
-  rb = '#!%[which ruby]',
-  forin = 'for %1(element) in %2(collection)\n\t%1.%0\nend',
-  ife = 'if %1(condition)\n\t%2\nelse\n\t%3\nend',
-  ['if'] = 'if %1(condition)\n\t%0\nend',
-  case = 'case %1(object)\nwhen %2(condition)\n\t%0\nend',
-  Dir = 'Dir.glob(%1(pattern)) do |%2(file)|\n\t%0\nend',
-  File = 'File.foreach(%1(\'path/to/file\')) do |%2(line)|\n\t%0\nend',
-  am = 'alias_method :%1(new_name), :%2(old_name)',
-  all = 'all? { |%1(e)| %0 }',
-  any = 'any? { |%1(e)| %0 }',
-  app = 'if __FILE__ == $PROGRAM_NAME\n\t%0\nend',
-  as = 'assert(%1(test), \'%2(Failure message.)\')',
-  ase = 'assert_equal(%1(expected), %2(actual))',
-  asid = 'assert_in_delta(%1(expected_float), %2(actual_float), %3(2 ** -20))',
-  asio = 'assert_instance_of(%1(ExpectedClass), %2(actual_instance))',
-  asko = 'assert_kind_of(%1(ExpectedKind), %2(actual_instance))',
-  asm = 'assert_match(/%1(expected_pattern)/, %2(actual_string))',
-  asn = 'assert_nil(%1(instance))',
-  asnm = 'assert_no_match(/%1(unexpected_pattern)/, %2(actual_string))',
-  asne = 'assert_not_equal(%1(unexpected), %2(actual))',
-  asnn = 'assert_not_nil(%1(instance))',
-  asns = 'assert_not_same(%1(unexpected), %2(actual))',
-  asnr = 'assert_nothing_raised(%1(Exception)) { %0 }',
-  asnt = 'assert_nothing_thrown { %0 }',
-  aso = 'assert_operator(%1(left), :%2(operator), %3(right))',
-  asr = 'assert_raise(%1(Exception)) { %0 }',
-  asrt = 'assert_respond_to(%1(object), :%2(method))',
-  assa = 'assert_same(%1(expected), %2(actual))',
-  asse = 'assert_send([%1(object), :%2(message), %3(args)])',
-  ast = 'assert_throws(:%1(expected)) { %0 }',
-  rw = 'attr_accessor :%1(attr_names)',
-  r = 'attr_reader :%1(attr_names)',
-  w = 'attr_writer :%1(attr_names)',
-  cla = 'class %1(ClassName)\n\t%0\nend',
-  cl = 'classify { |%1(e)| %0 }',
-  col = 'collect { |%1(e)| %0 }',
-  collect = 'collect { |%1(element)| %1.%0 }',
-  def = 'def %1(method_name)\n\t%0\nend',
-  mm = 'def method_missing(meth, *args, &block)\n\t%0\nend',
-  defs = 'def self.%1(class_method_name)\n\t%0\nend',
-  deft = 'def test_%1(case_name)\n\t%0\nend',
-  deli = 'delete_if { |%1(e)| %0 }',
-  det = 'detect { |%1(e)| %0 }',
-  ['do'] = 'do\n\t%0\nend',
-  doo = 'do |%1(object)|\n\t%0\nend',
-  each = 'each { |%1(e)| %0 }',
-  eab = 'each_byte { |%1(byte)| %0 }',
-  eac = 'each_char { |%1(chr)| %0 }',
-  eaco = 'each_cons(%1(2)) { |%2(group)| %0 }',
-  eai = 'each_index { |%1(i)| %0 }',
-  eak = 'each_key { |%1(key)| %0 }',
-  eal = 'each_line%1 { |%2(line)| %0 }',
-  eap = 'each_pair { |%1(name), %2(val)| %0 }',
-  eas = 'each_slice(%1(2)) { |%2(group)| %0 }',
-  eav = 'each_value { |%1(val)| %0 }',
-  eawi = 'each_with_index { |%1(e), %2(i)| %0 }',
-  fin = 'find { |%1(e)| %0 }',
-  fina = 'find_all { |%1(e)| %0 }',
-  flao = 'inject(Array.new) { |%1(arr), %2(a)| %1.push(*%2) }',
-  grep = 'grep(%1(pattern)) { |%2(match)| %0 }',
-  gsu = 'gsub(/%1(pattern)/) { |%2(match)| %0 }',
-  [':'] = ':%1(key) => \'%2(value)\',',
-  is = '=> ',
-  inj = 'inject(%1(init)) { |%2(mem), %3(var)| %0 }',
-  lam = 'lambda { |%1(args)| %0 }',
-  map = 'map { |%1(e)| %0 }',
-  mapwi = 'enum_with_index.map { |%1(e), %2(i)| %0 }',
-  max = 'max { |a, b| %0 }',
-  min = 'min { |a, b| %0 }',
-  mod = 'module %1(ModuleName)\n\t%0\nend',
-  par = 'partition { |%1(e)| %0 }',
-  ran = 'sort_by { rand }',
-  rej = 'reject { |%1(e)| %0 }',
-  req = 'require \'%0\'',
-  rea = 'reverse_each { |%1(e)| %0 }',
-  sca = 'scan(/%1(pattern)/) { |%2(match)| %0 }',
-  sel = 'select { |%1(e)| %0 }',
-  sor = 'sort { |a, b| %0 }',
-  sorb = 'sort_by { |%1(e)| %0 }',
-  ste = 'step(%1(2)) { |%2(n)| %0 }',
-  sub = 'sub(/%1(pattern)/) { |%2(match)| %0 }',
-  tim = 'times { %1(n) %0 }',
-  uni = 'ARGF.each_line%1 do |%2(line)|\n\t%0\nend',
-  unless = 'unless %1(condition)\n\t%0\nend',
-  upt = 'upto(%1(2)) { |%2(n)| %0 }',
-  dow = 'downto(%1(2)) { |%2(n)| %0 }',
-  when = 'when %1(condition)\n\t',
-  zip = 'zip(%1(enums)) { |%2(row)| %0 }',
-  tc = [[
+local snip = snippets.ruby
+snip.rb = '#!%[which ruby]'
+snip.forin = 'for %1(element) in %2(collection)\n\t%1.%0\nend'
+snip.ife = 'if %1(condition)\n\t%2\nelse\n\t%3\nend'
+snip['if'] = 'if %1(condition)\n\t%0\nend'
+snip.case = 'case %1(object)\nwhen %2(condition)\n\t%0\nend'
+snip.Dir = 'Dir.glob(%1(pattern)) do |%2(file)|\n\t%0\nend'
+snip.File = 'File.foreach(%1(\'path/to/file\')) do |%2(line)|\n\t%0\nend'
+snip.am = 'alias_method :%1(new_name), :%2(old_name)'
+snip.all = 'all? { |%1(e)| %0 }'
+snip.any = 'any? { |%1(e)| %0 }'
+snip.app = 'if __FILE__ == $PROGRAM_NAME\n\t%0\nend'
+snip.as = 'assert(%1(test), \'%2(Failure message.)\')'
+snip.ase = 'assert_equal(%1(expected), %2(actual))'
+snip.asid = 'assert_in_delta(%1(expected_float), %2(actual_float), %3(2 ** -20))'
+snip.asio = 'assert_instance_of(%1(ExpectedClass), %2(actual_instance))'
+snip.asko = 'assert_kind_of(%1(ExpectedKind), %2(actual_instance))'
+snip.asm = 'assert_match(/%1(expected_pattern)/, %2(actual_string))'
+snip.asn = 'assert_nil(%1(instance))'
+snip.asnm = 'assert_no_match(/%1(unexpected_pattern)/, %2(actual_string))'
+snip.asne = 'assert_not_equal(%1(unexpected), %2(actual))'
+snip.asnn = 'assert_not_nil(%1(instance))'
+snip.asns = 'assert_not_same(%1(unexpected), %2(actual))'
+snip.asnr = 'assert_nothing_raised(%1(Exception)) { %0 }'
+snip.asnt = 'assert_nothing_thrown { %0 }'
+snip.aso = 'assert_operator(%1(left), :%2(operator), %3(right))'
+snip.asr = 'assert_raise(%1(Exception)) { %0 }'
+snip.asrt = 'assert_respond_to(%1(object), :%2(method))'
+snip.assa = 'assert_same(%1(expected), %2(actual))'
+snip.asse = 'assert_send([%1(object), :%2(message), %3(args)])'
+snip.ast = 'assert_throws(:%1(expected)) { %0 }'
+snip.rw = 'attr_accessor :%1(attr_names)'
+snip.r = 'attr_reader :%1(attr_names)'
+snip.w = 'attr_writer :%1(attr_names)'
+snip.cla = 'class %1(ClassName)\n\t%0\nend'
+snip.cl = 'classify { |%1(e)| %0 }'
+snip.col = 'collect { |%1(e)| %0 }'
+snip.collect = 'collect { |%1(element)| %1.%0 }'
+snip.def = 'def %1(method_name)\n\t%0\nend'
+snip.mm = 'def method_missing(meth, *args, &block)\n\t%0\nend'
+snip.defs = 'def self.%1(class_method_name)\n\t%0\nend'
+snip.deft = 'def test_%1(case_name)\n\t%0\nend'
+snip.deli = 'delete_if { |%1(e)| %0 }'
+snip.det = 'detect { |%1(e)| %0 }'
+snip['do'] = 'do\n\t%0\nend'
+snip.doo = 'do |%1(object)|\n\t%0\nend'
+snip.each = 'each { |%1(e)| %0 }'
+snip.eab = 'each_byte { |%1(byte)| %0 }'
+snip.eac = 'each_char { |%1(chr)| %0 }'
+snip.eaco = 'each_cons(%1(2)) { |%2(group)| %0 }'
+snip.eai = 'each_index { |%1(i)| %0 }'
+snip.eak = 'each_key { |%1(key)| %0 }'
+snip.eal = 'each_line%1 { |%2(line)| %0 }'
+snip.eap = 'each_pair { |%1(name), %2(val)| %0 }'
+snip.eas = 'each_slice(%1(2)) { |%2(group)| %0 }'
+snip.eav = 'each_value { |%1(val)| %0 }'
+snip.eawi = 'each_with_index { |%1(e), %2(i)| %0 }'
+snip.fin = 'find { |%1(e)| %0 }'
+snip.fina = 'find_all { |%1(e)| %0 }'
+snip.flao = 'inject(Array.new) { |%1(arr), %2(a)| %1.push(*%2) }'
+snip.grep = 'grep(%1(pattern)) { |%2(match)| %0 }'
+snip.gsu = 'gsub(/%1(pattern)/) { |%2(match)| %0 }'
+snip[':'] = ':%1(key) => \'%2(value)\','
+snip.is = '=> '
+snip.inj = 'inject(%1(init)) { |%2(mem), %3(var)| %0 }'
+snip.lam = 'lambda { |%1(args)| %0 }'
+snip.map = 'map { |%1(e)| %0 }'
+snip.mapwi = 'enum_with_index.map { |%1(e), %2(i)| %0 }'
+snip.max = 'max { |a, b| %0 }'
+snip.min = 'min { |a, b| %0 }'
+snip.mod = 'module %1(ModuleName)\n\t%0\nend'
+snip.par = 'partition { |%1(e)| %0 }'
+snip.ran = 'sort_by { rand }'
+snip.rej = 'reject { |%1(e)| %0 }'
+snip.req = 'require \'%0\''
+snip.rea = 'reverse_each { |%1(e)| %0 }'
+snip.sca = 'scan(/%1(pattern)/) { |%2(match)| %0 }'
+snip.sel = 'select { |%1(e)| %0 }'
+snip.sor = 'sort { |a, b| %0 }'
+snip.sorb = 'sort_by { |%1(e)| %0 }'
+snip.ste = 'step(%1(2)) { |%2(n)| %0 }'
+snip.sub = 'sub(/%1(pattern)/) { |%2(match)| %0 }'
+snip.tim = 'times { %1(n) %0 }'
+snip.uni = 'ARGF.each_line%1 do |%2(line)|\n\t%0\nend'
+snip.unless = 'unless %1(condition)\n\t%0\nend'
+snip.upt = 'upto(%1(2)) { |%2(n)| %0 }'
+snip.dow = 'downto(%1(2)) { |%2(n)| %0 }'
+snip.when = 'when %1(condition)\n\t'
+snip.zip = 'zip(%1(enums)) { |%2(row)| %0 }'
+snip.tc = [[
 require 'test/unit'
 require '%1(library_file_name)'
 
@@ -340,7 +330,6 @@ class Test%2(NameOfTestCases) < Test::Unit::TestCase
 	def test_%3(case_name)
 		%0
 	end
-end]],
-}
+end]]
 
 return M
