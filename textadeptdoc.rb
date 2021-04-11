@@ -1,18 +1,16 @@
-# Copyright 2007-2020 Mitchell. See LICENSE.
+# Copyright 2007-2021 Mitchell. See LICENSE.
 
 require 'rdoc/generator'
 
 ##
 # Textadept format for RDoc.
-# This class is used by RDoc to create an Textadept autocompletions and
-# documentation for Ruby with a "fake" ctags file and an api file.
-# In addition to the normal ctags kinds for Ruby, the kind 'C' is recognized as
-# a constant and 'a' as an attribute.
+# This class is used by RDoc to create an Textadept autocompletions and documentation for Ruby
+# with a "fake" ctags file and an api file.  In addition to the normal ctags kinds for Ruby,
+# the kind 'C' is recognized as a constant and 'a' as an attribute.
 #
 # Requires Ruby 1.9.
 #
-# Install this file to your `rdoc/generator/` folder and add it to the bottom of
-# `rdoc/rdoc.rb`.
+# Install this file to your `rdoc/generator/` folder and add it to the bottom of `rdoc/rdoc.rb`.
 #
 # Usage: rdoc -f textadept [files]
 # Two files are generated in the output directory: `tags` and `api`.
@@ -85,8 +83,8 @@ class RDoc::Generator::TEXTADEPT
   # Writes a ctag.
   # @param file The file to write to.
   # @param name The name of the tag.
-  # @param k The kind of ctag. This generator uses 5 kinds: m Module, c Class,
-  # f Method, C Constant, a Attribute.
+  # @param k The kind of ctag. This generator uses 5 kinds: m Module, c Class, f Method,
+  #   C Constant, a Attribute.
   # @param ext_fields The ext_fields for the ctag.
   def write_tag(file, name, k, ext_fields)
     ext_fields = ext_fields.join("\t") if ext_fields.class == Array
@@ -97,8 +95,7 @@ class RDoc::Generator::TEXTADEPT
   # Returns a formatted comment.
   # @param comment The comment to format.
   def format(comment)
-    return comment.gsub(/^\s*#+/, '').gsub(/<\/?code>/, '`').
-                   gsub("\\n", "\\\\\\\\n")
+    return comment.gsub(/^\s*#+/, '').gsub(/<\/?code>/, '`').gsub("\\n", "\\\\\\\\n")
   end
 
   ##

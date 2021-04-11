@@ -1,4 +1,4 @@
--- Copyright 2007-2020 Mitchell. See LICENSE.
+-- Copyright 2007-2021 Mitchell. See LICENSE.
 
 local M = {}
 
@@ -10,27 +10,26 @@ local M = {}
 -- ### Key Bindings
 --
 -- + `Shift+Enter` (`⇧↩` | `S-Enter`)
---   Try to autocomplete an `if`, `while`, `for`, etc. control structure with
---   `end`.
+--   Try to autocomplete an `if`, `while`, `for`, etc. control structure with `end`.
 module('_M.ruby')]]
 
 -- Sets default buffer properties for Ruby files.
 events.connect(events.LEXER_LOADED, function(name)
   if name ~= 'ruby' then return end
-  buffer.word_chars =
-    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_?!'
+  buffer.word_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_?!'
 end)
 
 -- Autocompletion and documentation.
 
 ---
 -- List of "fake" ctags files to use for autocompletion.
--- In addition to the normal ctags kinds for Ruby, the kind 'C' is recognized as
--- a constant and 'a' as an attribute.
+-- In addition to the normal ctags kinds for Ruby, the kind 'C' is recognized as a constant and
+-- 'a' as an attribute.
 -- @class table
 -- @name tags
 M.tags = {_HOME .. '/modules/ruby/tags', _USERHOME .. '/modules/ruby/tags'}
 
+-- LuaFormatter off
 ---
 -- Map of expression patterns to their types.
 -- Expressions are expected to match after the '=' sign of a statement.
@@ -46,19 +45,18 @@ M.expr_types = {
   ['^%d+%.%d+'] = 'Float',
   ['^%d+%.%.%.?%d+'] = 'Range'
 }
+-- LuaFormatter on
 
 local XPM = textadept.editing.XPM_IMAGES
 local xpms = {
-  c = XPM.CLASS, f = XPM.METHOD, m = XPM.STRUCT, F = XPM.SLOT, C = XPM.VARIABLE,
-  a = XPM.VARIABLE
+  c = XPM.CLASS, f = XPM.METHOD, m = XPM.STRUCT, F = XPM.SLOT, C = XPM.VARIABLE, a = XPM.VARIABLE
 }
 
 textadept.editing.autocompleters.ruby = function()
   local list = {}
   -- Retrieve the symbol behind the caret.
   local line, pos = buffer:get_cur_line()
-  local symbol, op, part = line:sub(1, pos - 1):match(
-    '([%w_%.]-)([%.:]*)([%w_]*)$')
+  local symbol, op, part = line:sub(1, pos - 1):match('([%w_%.]-)([%.:]*)([%w_]*)$')
   if symbol == '' and part == '' then return nil end -- nothing to complete
   if op ~= '' and op ~= '.' and op ~= '::' then return nil end
   -- Attempt to identify the symbol type.
@@ -68,7 +66,10 @@ textadept.editing.autocompleters.ruby = function()
     local expr = buffer:get_line(i):match(assignment)
     if not expr then goto continue end
     for patt, type in pairs(M.expr_types) do
-      if expr:find(patt) then symbol = type break end
+      if expr:find(patt) then
+        symbol = type
+        break
+      end
     end
     if expr:find('^[%w_:]+%.new') then
       symbol = expr:match('^([%w_:]+).new') -- e.g. a = Foo.new
@@ -97,9 +98,7 @@ textadept.editing.autocompleters.ruby = function()
   return #part, list
 end
 
-textadept.editing.api_files.ruby = {
-  _HOME .. '/modules/ruby/api', _USERHOME .. '/modules/ruby/api'
-}
+textadept.editing.api_files.ruby = {_HOME .. '/modules/ruby/api', _USERHOME .. '/modules/ruby/api'}
 
 -- Commands.
 
@@ -109,13 +108,12 @@ textadept.editing.api_files.ruby = {
 -- @name control_structure_patterns
 -- @see try_to_autocomplete_end
 local control_structure_patterns = {
-  '^%s*begin', '^%s*case', '^%s*class', '^%s*def', '^%s*for', '^%s*if',
-  '^%s*module', '^%s*unless', '^%s*until', '^%s*while', 'do%s*|?.-|?%s*$'
+  '^%s*begin', '^%s*case', '^%s*class', '^%s*def', '^%s*for', '^%s*if', '^%s*module', '^%s*unless',
+  '^%s*until', '^%s*while', 'do%s*|?.-|?%s*$'
 }
 
 ---
--- Tries to autocomplete Ruby's `end` keyword for control structures like `if`,
--- `while`, `for`, etc.
+-- Tries to autocomplete Ruby's `end` keyword for control structures like `if`, `while`, `for`, etc.
 -- @see control_structure_patterns
 -- @name try_to_autocomplete_end
 function M.try_to_autocomplete_end()
@@ -147,13 +145,12 @@ local newlines = {[0] = '\r\n', '\r', '\n'}
 
 ---
 -- Toggles between `{ ... }` and `do ... end` Ruby blocks.
--- If the caret is inside a `{ ... }` single-line block, that block is converted
--- to a multiple-line `do .. end` block. If the caret is on a line that contains
--- single-line `do ... end` block, that block is converted to a single-line
--- `{ ... }` block. If the caret is inside a multiple-line `do ... end` block,
--- that block is converted to a single-line `{ ... }` block with all newlines
--- replaced by a space. Indentation is important. The `do` and `end` keywords
--- must be on lines with the same level of indentation to toggle correctly.
+-- If the caret is inside a `{ ... }` single-line block, that block is converted to a multiple-line
+-- `do .. end` block. If the caret is on a line that contains single-line `do ... end` block, that
+-- block is converted to a single-line `{ ... }` block. If the caret is inside a multiple-line
+-- `do ... end` block, that block is converted to a single-line `{ ... }` block with all newlines
+-- replaced by a space. Indentation is important. The `do` and `end` keywords must be on lines
+-- with the same level of indentation to toggle correctly.
 -- @name toggle_block
 function M.toggle_block()
   local pos = buffer.current_pos
@@ -173,12 +170,11 @@ function M.toggle_block()
         local s2, e2 = block:find('%b{}')
         if not s2 and not e2 then s2, e2 = #block, #block end
         local part1, part2 = block:sub(1, s2), block:sub(e2 + 1)
-        hash = part1:find('=>') or part1:find('[%w_]:') or
-          part2:find('=>') or part2:find('[%w_]:')
+        hash = part1:find('=>') or part1:find('[%w_]:') or part2:find('=>') or part2:find('[%w_]:')
         if not hash then
           local newline = newlines[buffer.eol_mode]
           local block, r = block:gsub('^(%s*|[^|]*|)', '%1' .. newline)
-          if r == 0 then block = newline..block end
+          if r == 0 then block = newline .. block end
           buffer:begin_undo_action()
           buffer:set_target_range(s, p + 1)
           buffer:replace_target(string.format('do%s%send', block, newline))
@@ -211,10 +207,7 @@ function M.toggle_block()
   local indent = line_indentation[s]
   e = s + 1
   while e < buffer.line_count and
-        (not buffer:get_line(e):find(end_patt) or
-          line_indentation[e] ~= indent) do
-    e = e + 1
-  end
+    (not buffer:get_line(e):find(end_patt) or line_indentation[e] ~= indent) do e = e + 1 end
   if e >= buffer.line_count then return end -- no block end found
   local s2 = buffer:position_from_line(s) + buffer:get_line(s):find(do_patt) - 1
   local _, e2 = buffer:get_line(e):find(end_patt)
