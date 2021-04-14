@@ -166,14 +166,15 @@ function M.toggle_block()
       local s = buffer:brace_match(p, 0)
       if s >= 1 then
         local block = buffer:text_range(s + 1, p)
-        local hash = false
         local s2, e2 = block:find('%b{}')
         if not s2 and not e2 then s2, e2 = #block, #block end
         local part1, part2 = block:sub(1, s2), block:sub(e2 + 1)
-        hash = part1:find('=>') or part1:find('[%w_]:') or part2:find('=>') or part2:find('[%w_]:')
+        local hash = part1:find('=>') or part1:find('[%w_]:') or part2:find('=>') or
+          part2:find('[%w_]:')
         if not hash then
           local newline = newlines[buffer.eol_mode]
-          local block, r = block:gsub('^(%s*|[^|]*|)', '%1' .. newline)
+          local r
+          block, r = block:gsub('^(%s*|[^|]*|)', '%1' .. newline)
           if r == 0 then block = newline .. block end
           buffer:begin_undo_action()
           buffer:set_target_range(s, p + 1)
