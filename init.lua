@@ -207,9 +207,9 @@ function M.toggle_block()
   if s < 1 then return end -- no block start found
   local indent = line_indentation[s]
   e = s + 1
-  while e < buffer.line_count and
+  while e <= buffer.line_count and
     (not buffer:get_line(e):find(end_patt) or line_indentation[e] ~= indent) do e = e + 1 end
-  if e >= buffer.line_count then return end -- no block end found
+  if e > buffer.line_count then return end -- no block end found
   local s2 = buffer:position_from_line(s) + buffer:get_line(s):find(do_patt) - 1
   local _, e2 = buffer:get_line(e):find(end_patt)
   e2 = buffer:position_from_line(e) + e2
